@@ -9,14 +9,14 @@ venv/
 
 # Ignore sensitive files
 main.py
-see_user.py
+see_users.py
 __init__.py
 
 # VS Code settings
 .vscode/
 
 # Ignore logs
-*.log
+*.logs
 
 # Ignore OS-specific files
 .DS_Store
