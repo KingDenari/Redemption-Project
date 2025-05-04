@@ -8,9 +8,9 @@ venv/
 *.env
 
 # Ignore sensitive files
-main.py
+
 see_users.py
-__init__.py
+
 
 # VS Code settings
 .vscode/
