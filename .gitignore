@@ -16,7 +16,7 @@ __init__.py
 .vscode/
 
 # Ignore logs
-*.logs
+logs/
 
 # Ignore OS-specific files
 .DS_Store
