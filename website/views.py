@@ -62,7 +62,7 @@ def generate_qr():
         "Social Studies Exam G8": "https://drive.google.com/file/d/1aYnAIH09fCnL3GCcHA-OGvXi7S15dVwA/view?usp=sharing",
         "Kiswahili Exam G8": "https://drive.google.com/file/d/1pRM_l_cCL2YvSWVb25hqMI3YrEaWNMim/view?usp=sharing",
         "Creativie Arts and Sports G8": "https://drive.google.com/file/d/1fk6ilwVmhyqzmzv-XsM5LDl7Q31K6_LH/view?usp=sharing",
-        "C.R.E G8": "https://drive.google.com/file/d/18-IkL7xQsbX_5z4OGeDtT8LCJBGNMYCE/view?usp=sharing"
+        "C.R.E G8": "https://drive.google.com/file/d/18-IkL7xQsbX_5z4OGeDtT8LCJBGNMYCE/view?usp=sharing "
     }
 
     if request.method == 'POST':
