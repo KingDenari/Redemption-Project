@@ -54,7 +54,15 @@ def generate_qr():
         "Agriculture PP1 G9": "https://drive.google.com/file/d/1TX85rHtK30MKeueeyIWdWl1SNjepkNZz/view?usp=sharing",
         "C.R.E G9": "https://drive.google.com/file/d/1r7cGozpR4bsb6vLu0I03l7zxCpvoFn4-/view?usp=sharing",
         "CAS G9": "https://drive.google.com/file/d/1GcFWY3mPB8w2WjvMBxXRuFdaqbsGBIA8/view?usp=sharing",
-        "Kiswahili PP1 G9": "https://drive.google.com/file/d/1kyUwHcrY-KNYo6i3TvH8aA8IxRMxi2lW/view?usp=sharing"
+        "Kiswahili PP1 G9": "https://drive.google.com/file/d/1kyUwHcrY-KNYo6i3TvH8aA8IxRMxi2lW/view?usp=sharing",
+        "English Exam G8": "https://drive.google.com/file/d/1URHcw0j6i_ImwyIC6tJ24i_oOt2-Wfmb/view?usp=sharing",
+        "I.Sci Exam G8": "https://drive.google.com/file/d/1suZnpCrSp4hoGg8ojWAvOh9q2R3mXKTq/view?usp=sharing",
+        "Math Exam G8": "https://drive.google.com/file/d/161s-cc2eFPKruG560Nlg7S9eHRHr4z_I/view?usp=sharing",
+        "Pre-Technical Studies G8": "https://drive.google.com/file/d/1Y6kg4xL7tctSPLWFzQj_4r4TdHIU84ku/view?usp=sharing",
+        "Social Studies Exam G8": "https://drive.google.com/file/d/1aYnAIH09fCnL3GCcHA-OGvXi7S15dVwA/view?usp=sharing",
+        "Kiswahili Exam G8": "https://drive.google.com/file/d/1pRM_l_cCL2YvSWVb25hqMI3YrEaWNMim/view?usp=sharing",
+        "Creativie Arts and Sports G8": "https://drive.google.com/file/d/1fk6ilwVmhyqzmzv-XsM5LDl7Q31K6_LH/view?usp=sharing",
+        "C.R.E G8": "https://drive.google.com/file/d/18-IkL7xQsbX_5z4OGeDtT8LCJBGNMYCE/view?usp=sharing"
     }
 
     if request.method == 'POST':
