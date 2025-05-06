@@ -28,6 +28,48 @@ def settings():
     theme = session.get('theme', 'light')
     return render_template("settings.html", user=current_user, theme=theme)
 
+@views.route('/premium', methods=['GET', 'POST'])
+@login_required
+def premium():
+    allowed_code = ["test1234"]
+    allowed_emails = ["abeldena123@gmail.com", "austinmvera@gmail.com"]
+
+    if request.method == "POST":
+        entered_code = request.form.get("code")
+        entered_email = request.form.get("email")
+
+        if entered_code == allowed_code and entered_email in allowed_emails:
+            flash("Access granted! You now have premium access.", category="success")
+            
+
+            # Send notification email to the person who signed in
+            try:
+                msg = EmailMessage()
+                msg['Subject'] = 'New Premium Sign In'
+                msg['From'] = 'abeldena123@gmail.com'
+                msg['To'] = entered_email
+                now = datetime.now().strftime('%Y-%m-%d %H:%M')
+                msg.set_content(f"Hello Premium User!, \n\nYou are now a premium user. You are now eligible to free downloadable Exams, Notes and G9 Blueprints. Please do not share your secret code with anyone.\n\n\n New Premium sign in on {now}")
+
+                with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                    smtp.login('abeldena123@gmail.com', 'kxto ddfp tpoq tjtv')
+                    smtp.send_message(msg)
+            except Exception as e:
+                flash(f"Notification email failed: {e}", category="danger")
+
+            return redirect(url_for('views.unlocked_premium'))
+        else:
+            flash("Access denied. Invalid code or email.", category="danger")
+
+    return render_template("premium.html", user=current_user)
+
+
+
+@views.route('/unlocked_premium')
+@login_required
+def unlocked_premium():
+    return render_template("unlocked_premium.html", user=current_user)
+
 @views.route('/terms')
 @login_required
 def terms():
@@ -55,6 +97,7 @@ def generate_qr():
         "C.R.E G9": "https://drive.google.com/file/d/1r7cGozpR4bsb6vLu0I03l7zxCpvoFn4-/view?usp=sharing",
         "CAS G9": "https://drive.google.com/file/d/1GcFWY3mPB8w2WjvMBxXRuFdaqbsGBIA8/view?usp=sharing",
         "Kiswahili PP1 G9": "https://drive.google.com/file/d/1kyUwHcrY-KNYo6i3TvH8aA8IxRMxi2lW/view?usp=sharing",
+        "Social Studies G9": "https://drive.google.com/file/d/1aYnAIH09fCnL3GCcHA-OGvXi7S15dVwA/view?usp=sharing",
         "English Exam G8": "https://drive.google.com/file/d/1URHcw0j6i_ImwyIC6tJ24i_oOt2-Wfmb/view?usp=sharing",
         "I.Sci Exam G8": "https://drive.google.com/file/d/1suZnpCrSp4hoGg8ojWAvOh9q2R3mXKTq/view?usp=sharing",
         "Math Exam G8": "https://drive.google.com/file/d/161s-cc2eFPKruG560Nlg7S9eHRHr4z_I/view?usp=sharing",
@@ -62,7 +105,7 @@ def generate_qr():
         "Social Studies Exam G8": "https://drive.google.com/file/d/1aYnAIH09fCnL3GCcHA-OGvXi7S15dVwA/view?usp=sharing",
         "Kiswahili Exam G8": "https://drive.google.com/file/d/1pRM_l_cCL2YvSWVb25hqMI3YrEaWNMim/view?usp=sharing",
         "Creativie Arts and Sports G8": "https://drive.google.com/file/d/1fk6ilwVmhyqzmzv-XsM5LDl7Q31K6_LH/view?usp=sharing",
-        "C.R.E G8": "https://drive.google.com/file/d/18-IkL7xQsbX_5z4OGeDtT8LCJBGNMYCE/view?usp=sharing",
+        "C.R.E G8": "https://drive.google.com/file/d/18-IkL7xQsbX_5z4OGeDtT8LCJBGNMYCE/view?usp=sharing"
     }
 
     if request.method == 'POST':
@@ -84,7 +127,6 @@ def generate_qr():
                 filepath = os.path.join(folder, filename)
                 img.save(filepath)
 
-                # Send email
                 try:
                     msg = EmailMessage()
                     msg['Subject'] = 'Your Requested QR Code'
@@ -97,26 +139,20 @@ def generate_qr():
                         msg.add_attachment(file_data, maintype='image', subtype='png', filename=filename)
 
                     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-                        smtp.login('abeldena123@gmail.com', 'kxto ddfp tpoq tjtv')  # Use app password
+                        smtp.login('abeldena123@gmail.com', 'kxto ddfp tpoq tjtv')
                         smtp.send_message(msg)
 
                     flash("QR code sent to your email!", category='success')
                 except Exception as e:
                     flash(f"Failed to send email: {e}", category='danger')
 
-                # Log the request in a CSV file
                 log_file = os.path.join('logs', 'qr_requests.csv')
                 os.makedirs('logs', exist_ok=True)
-
-                # Get the current timestamp
                 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-                # Open the CSV file and append the log entry
                 with open(log_file, mode='a', newline='') as file:
                     writer = csv.writer(file)
-                    writer.writerow([user_email,current_user, selected_file, qr_name, timestamp, request.remote_addr, request.headers.get('User-Agent'),
-])
-
+                    writer.writerow([user_email,current_user, selected_file, qr_name, timestamp, request.remote_addr, request.headers.get('User-Agent')])
             else:
                 flash("Selected file not found.", category='danger')
 
