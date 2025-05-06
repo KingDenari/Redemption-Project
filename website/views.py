@@ -31,8 +31,8 @@ def settings():
 @views.route('/premium', methods=['GET', 'POST'])
 @login_required
 def premium():
-    allowed_code = ["test1234"]
-    allowed_emails = ["abeldena123@gmail.com", "austinmvera@gmail.com"]
+    allowed_code = ["test1234", "forabel"]
+    allowed_emails = ["abeldena123@gmail.com", "austinmvera@gmail.com", "abeldenari@gmail.com"]
 
     if request.method == "POST":
         entered_code = request.form.get("code")
