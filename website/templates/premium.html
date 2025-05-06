@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Premium{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2 class="text-center my-4">Premium Access</h2>
+  <p class="text-center mb-4">Get more downloaded papers</p>
+
+  <form method="POST" class="card p-4 shadow mx-auto" style="max-width: 500px;">
+    <div class="form-group mb-3">
+      <label for="code" class="fw-bold">Secret Code</label>
+      <input type="text" class="form-control" id="code" name="code" placeholder="Enter the secret code to access the site" required>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="email" class="fw-bold">Email Address</label>
+      <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Submit</button>
+  </form>
+</div>
+{% endblock %}
+
