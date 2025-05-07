@@ -1,8 +1,8 @@
-import csv 
+import csv
 import os
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from flask_login import login_required, current_user
-from .models import User
+from website.models import User
 import qrcode
 import smtplib
 from email.message import EmailMessage
@@ -31,28 +31,29 @@ def settings():
 @views.route('/premium', methods=['GET', 'POST'])
 @login_required
 def premium():
-    allowed_code = ["test1234", "forabel"]
-    allowed_emails = ["abeldena123@gmail.com", "austinmvera@gmail.com", "abeldenari@gmail.com"]
+    allowed_code = ["test1234", "1234"]  # just a string, not a list
+    allowed_emails = ["abeldena123@gmail.com", "austinmvera@gmail.com", "alpcustomercare1@gmail.com"]
 
     if request.method == "POST":
         entered_code = request.form.get("code")
         entered_email = request.form.get("email")
 
-        if entered_code == allowed_code and entered_email in allowed_emails:
+        if entered_code in allowed_code and entered_email in allowed_emails:
             flash("Access granted! You now have premium access.", category="success")
-            
 
-            # Send notification email to the person who signed in
+            # Send notification email
             try:
                 msg = EmailMessage()
                 msg['Subject'] = 'New Premium Sign In'
-                msg['From'] = 'abeldena123@gmail.com'
+                msg['From'] = 'redemptioncustomercare@gmail.com'
                 msg['To'] = entered_email
                 now = datetime.now().strftime('%Y-%m-%d %H:%M')
-                msg.set_content(f"Hello Premium User!, \n\nYou are now a premium user. You are now eligible to free downloadable Exams, Notes and G9 Blueprints. Please do not share your secret code with anyone.\n\n\n New Premium sign in on {now}")
+                msg.set_content(
+                    f"Hello Premium User!,\n\nYou are now eligible for free downloadable Exams, Notes, and Blueprints.\n\nNew Premium sign in on {now}"
+                )
 
                 with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-                    smtp.login('abeldena123@gmail.com', 'kxto ddfp tpoq tjtv')
+                    smtp.login('redemptioncustomercare1@gmail.com', 'gufo zvxi fnvn dnyq')
                     smtp.send_message(msg)
             except Exception as e:
                 flash(f"Notification email failed: {e}", category="danger")
@@ -62,7 +63,6 @@ def premium():
             flash("Access denied. Invalid code or email.", category="danger")
 
     return render_template("premium.html", user=current_user)
-
 
 
 @views.route('/unlocked_premium')
@@ -130,7 +130,7 @@ def generate_qr():
                 try:
                     msg = EmailMessage()
                     msg['Subject'] = 'Your Requested QR Code'
-                    msg['From'] = 'abeldena123@gmail.com'
+                    msg['From'] = 'redemptioncustomercare1@gmail.com'
                     msg['To'] = user_email
                     msg.set_content(f"Here is your QR code for {selected_file}.")
 
@@ -139,7 +139,7 @@ def generate_qr():
                         msg.add_attachment(file_data, maintype='image', subtype='png', filename=filename)
 
                     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-                        smtp.login('abeldena123@gmail.com', 'kxto ddfp tpoq tjtv')
+                        smtp.login('redemptioncustomercare1@gmail.com', 'gufo zvxi fnvn dnyq')
                         smtp.send_message(msg)
 
                     flash("QR code sent to your email!", category='success')
