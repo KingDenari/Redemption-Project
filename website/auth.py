@@ -6,6 +6,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 from flask_mail import Message
 from flask import current_app
 
+
 auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -75,4 +76,6 @@ def sign_up():
             return redirect(url_for('auth.login'))
 
     return render_template("sign_up.html", user=current_user)
+
+
 
