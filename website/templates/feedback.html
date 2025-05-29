@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback{% endblock %}
+
+{% block content %}
+<div class="container my-5" style="max-width: 600px;">
+  <h2 class="text-center mb-3">Feedback Form 📝</h2>
+  <p class="text-center">We’d love to hear your thoughts and suggestions. Your insights help us improve. </p>
+
+  <form method="POST">
+    <div class="mb-3">
+      <label for="grade" class="form-label">Grade 📖</label>
+      <input type="text" class="form-control" id="grade" name="grade" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="subject" class="form-label">Subject (optional) </label>
+      <input type="text" class="form-control" id="subject" name="subject">
+    </div>
+
+    <div class="mb-3">
+      <label for="feedback" class="form-label">Your Feedback 💬</label>
+      <textarea class="form-control" id="feedback" name="feedback" rows="5" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Submit 🚀</button>
+  </form>
+
+  <p class="text-center mt-3 text-muted">
+    Your name and email will NOT be shown. Your privacy is safe 🛡️
+  </p>
+</div>
+{% endblock %}
