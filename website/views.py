@@ -75,6 +75,35 @@ def unlocked_premium():
 def terms():
     return render_template("terms.html", user=current_user)
 
+@views.route('/feedback', methods=['GET', 'POST'])
+@login_required
+def feedback():
+    if request.method == 'POST':
+        grade = request.form['grade']
+        subject = request.form.get('subject', 'N/A')
+        feedback_text = request.form['feedback']
+
+        email_body = f"""
+        🎓 Grade: {grade}
+        📘 Subject: {subject}
+        💬 Feedback:
+        {feedback_text}
+        """
+
+        msg = Message(
+            subject="📥 New Feedback Received",
+            sender='redemptioncustomercare1@gmail.com',
+            recipients=['redemptioncustomercare1@gmail.com'],
+            body=email_body
+        )
+
+        mail.send(msg)  # ✅ Use Flask-Mail's send function instead of smtplib
+
+        flash("✅ Thanks! Your feedback has been sent.", "success")
+        return redirect(url_for('views.feedback'))
+
+    return render_template('feedback.html')
+
 @views.route('/about')
 @login_required
 def about():
