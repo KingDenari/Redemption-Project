@@ -10,7 +10,10 @@
   <form method="POST" class="card p-4 shadow mx-auto" style="max-width: 500px;">
     <div class="form-group mb-3">
       <label for="code" class="fw-bold">Secret Code</label>
-      <input type="text" class="form-control" id="code" name="code" placeholder="Enter the secret code to access the site" required>
+      <div class="input-group">
+        <input type="password" class="form-control" id="code" name="code" placeholder="Enter the secret code to access the site" required>
+       
+      </div>
     </div>
 
     <div class="form-group mb-3">
@@ -36,6 +39,21 @@
   </div>
   <p>‎ </p>
 </div>
+
+<!-- Toggle Visibility Script -->
+<script>
+  function toggleCodeVisibility() {
+    const codeInput = document.getElementById("code");
+    const icon = document.getElementById("toggle-icon");
+    if (codeInput.type === "password") {
+      codeInput.type = "text";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      codeInput.type = "password";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
+  }
+</script>
 {% endblock %}
-
-
