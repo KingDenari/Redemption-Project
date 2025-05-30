@@ -28,6 +28,48 @@ def settings():
     theme = session.get('theme', 'light')
     return render_template("settings.html", user=current_user, theme=theme)
 
+
+@views.route('/egoals', methods=['GET', 'POST'])
+@login_required
+def egoals():
+    premium_emails= ["abeldena123@gmail.com", "austinmvera@gmail.com"]
+
+    if request.method == 'POST':
+        entered_email2 = request.form.get("email")
+
+        if entered_email2 in premium_emails:
+            flash("Access granted! You now have access.", category="success")
+            
+            try:
+                msg = EmailMessage()
+                msg['Subject'] = '🚀 Your Goals Await – Time to Make Magic Happen!'
+                msg['From'] = 'redemptioncutomercare1@gmail.com'
+                msg['To'] = entered_email2
+                now2= datetime.now().strftime('%Y-%m-%d %H:%M')
+                msg.set_content(
+                    f"Hello User!,\n\n🎉 Now, it’s time to turn your dreams into reality with our premium goal-setting features.\nStart making your goals a reality with our premium features.\nNew sign in on {now2}\n\nCheers to new achievements, The Redemption Team ✨")
+                
+
+                with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                    smtp.login('redemptioncustomercare1@gmail.com', 'gufo zvxi fnvn dnyq')
+                    smtp.send_message(msg)
+            except Exception as e:
+                flash(f"Notification email failed: {e}", category="danger")
+
+            return redirect(url_for('views.unlocked_goals'))
+        
+        else:
+            flash("Access denied. Invalid email.", category="danger")
+
+
+    return render_template("egoals.html", user=current_user)
+
+
+@views.route('/unlocked_goals')
+@login_required
+def unlocked_goals():
+    return render_template("unlocked_goals.html", user=current_user)
+
 @views.route('/premium', methods=['GET', 'POST'])
 @login_required
 def premium():
