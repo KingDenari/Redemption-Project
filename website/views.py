@@ -74,6 +74,11 @@ def unlocked_premium():
 @login_required
 def terms():
     return render_template("terms.html", user=current_user)
+from flask_mail import Mail, Message
+
+# Initialize Flask-Mail
+mail = Mail()
+
 
 @views.route('/feedback', methods=['GET', 'POST'])
 @login_required
