@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h2 class="text my-2">Target Your Goals & Conquer!</h2>
+  <p class="text">Smart Goals = Success!</p>
+
+  <div class="text mb-4">
+    <button id="addTaskBtn" class="btn btn-success">➕ Add a Goal & Get Moving!</button>
+  </div>
+
+  <div id="taskForm" class="mb-4" style="display: none;">
+    <form id="goalForm">
+      <div class="form-group">
+        <input type="text" class="form-control mb-2" id="goalTitle" placeholder="Enter your goal" required>
+        <input type="date" class="form-control mb-2" id="goalDate" required>
+        <input type="time" class="form-control mb-2" id="goalTime" required>
+        <div class="d-flex justify-content-between">
+          <button type="submit" class="btn btn-primary">💾 Save Task</button>
+          <button type="button" class="btn btn-secondary" onclick="cancelTask()">❌ Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <ul id="goalsList" class="list-group"></ul>
+
+  <!-- Completed Goals Section (Initially Hidden) -->
+  <div id="completedGoalsSection" class="mt-5" style="display: none;">
+    <h3 class="text my-3">Completed Goals 🎉</h3>
+    <p class="text">You did it! Every small step leads to something great!</p>
+    <button id="toggleCompletedBtn" class="btn btn-info">📜 Show Completed Goals</button>
+    <ul id="completedGoalsList" class="list-group mt-3"></ul>
+  </div>
+
+  <!-- Reward Notification Box (Initially Hidden) -->
+  <div id="rewardNotification" class="alert alert-success text-center mt-4" style="display: none;">
+    🎉 **You’ve Completed 20 Goals!** 🏅  
+    📷 Send a screenshot to claim **1 week of free premium!** 🚀  
+    <button id="closeNotification" class="btn btn-danger btn-sm mt-2">❌ Dismiss</button>
+  </div>
+<footer class="text-center mt-5 py-3 bg-light"><p>This version of goals is still being improved.Give suggestions<a href="/feedback"> here</a></p>
+  </footer>
+</div>
+
+<script>
+  const tasks = [];
+  let completedCount = 0; // Tracks completed goals
+
+  document.getElementById("addTaskBtn").addEventListener("click", function () {
+    document.getElementById("taskForm").style.display = "block";
+  });
+
+  function cancelTask() {
+    document.getElementById("goalForm").reset();
+    document.getElementById("taskForm").style.display = "none";
+  }
+
+  document.getElementById("goalForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const title = document.getElementById("goalTitle").value;
+    const date = document.getElementById("goalDate").value;
+    const time = document.getElementById("goalTime").value;
+
+    // Convert date format to DD-MM-YYYY
+    const [year, month, day] = date.split("-");
+    const formattedDate = `${day}-${month}-${year}`;
+
+    const li = document.createElement("li");
+    li.className = "list-group-item d-flex justify-content-between align-items-center";
+    const taskContent = document.createElement("span");
+    taskContent.innerHTML = `<strong>${title}</strong><br><small>${formattedDate} at ${time}</small>`;
+    li.appendChild(taskContent);
+
+    const btnGroup = document.createElement("div");
+    btnGroup.innerHTML = `
+      <button class="btn btn-success btn-sm mr-2" onclick="markDone(this)">✅ Done</button>
+      <button class="btn btn-warning btn-sm mr-2" onclick="editTask(this)">✍️ Edit</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteTask(this)">🗑️ Delete</button>
+    `;
+    li.appendChild(btnGroup);
+
+    document.getElementById("goalsList").appendChild(li);
+    tasks.push({ element: li });
+
+    document.getElementById("goalForm").reset();
+    document.getElementById("taskForm").style.display = "none";
+  });
+
+  function markDone(button) {
+    const parent = button.closest("li");
+    parent.querySelector("span").style.textDecoration = "line-through";
+
+    setTimeout(() => {
+      document.getElementById("completedGoalsSection").style.display = "block";
+      document.getElementById("completedGoalsList").appendChild(parent);
+      parent.querySelector("button.btn-success").remove();
+      completedCount++;
+
+      if (completedCount === 20) {
+        document.getElementById("rewardNotification").style.display = "block";
+      }
+    }, 500);
+  }
+
+  function deleteTask(button) {
+    if (confirm("Deleting your goal? Redemption means completing—not escaping!")) {
+      button.closest("li").remove();
+    }
+  }
+
+  function editTask(button) {
+    if (confirm("Trying to edit? Redemption doesn’t rewrite fate—only improves it!")) {
+      const parent = button.closest("li");
+      const title = parent.querySelector("span strong").innerText;
+      const dateTime = parent.querySelector("span small").innerText;
+
+      document.getElementById("goalTitle").value = title;
+      const [dayMonthYear, time] = dateTime.split(" at ");
+      const [day, month, year] = dayMonthYear.split("-");
+      document.getElementById("goalDate").value = `${year}-${month}-${day}`;
+      document.getElementById("goalTime").value = time;
+    }
+  }
+
+  document.getElementById("toggleCompletedBtn").addEventListener("click", function () {
+    const list = document.getElementById("completedGoalsList");
+    list.style.display = list.style.display === "none" ? "block" : "none";
+    this.innerText = list.style.display === "none" ? "📜 Show Completed Goals" : "🙌 Hide Completed Goals";
+  });
+
+  document.getElementById("closeNotification").addEventListener("click", function () {
+    document.getElementById("rewardNotification").style.display = "none";
+  });
+
+</script>
+
+{% endblock %}
