@@ -81,6 +81,9 @@
                 <a class="dropdown-item" href="/settings">Settings</a>
                 <a class="dropdown-item" href="/terms">Terms of Use</a>
                 <a class="dropdown-item" href="/feedback">Give Feedback</a>
+                <a href="https://myredemption.tawk.help/" target="_blank" style="text-decoration: none;">
+  <i class="fas fa-question-circle" style="margin-right: 5px;"></i> Help Center
+</a>
               </div>
             </li>
             <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
@@ -100,6 +103,34 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
   </body>
+
+  {% if request.endpoint not in ['auth.login', 'auth.sign_up'] %}
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+
+(function () {
+  var s1 = document.createElement("script"),
+      s0 = document.getElementsByTagName("script")[0];
+  s1.async = true;
+  s1.src = 'https://embed.tawk.to/683ca704994ebc190f53579c/1ismeoqqk';
+  s1.charset = 'UTF-8';
+  s1.setAttribute('crossorigin', '*');
+  s0.parentNode.insertBefore(s1, s0);
+})();
+
+// Move widget to bottom left once it loads
+Tawk_API = Tawk_API || {};
+Tawk_API.onLoad = function () {
+  Tawk_API.setAttributes({ position: 'left' }, function (error) {
+    if (error) {
+      console.error("Tawk.to position change failed:", error);
+    }
+  });
+};
+</script>
+<!--End of Tawk.to Script-->
+{% endif %}
 </html>
 
 
