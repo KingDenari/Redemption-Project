@@ -16,6 +16,11 @@ def home():
     theme = session.get('theme', 'light')
     return render_template("home.html", user=current_user, theme=theme)
 
+@views.route('/plan')
+@login_required
+def plan():
+    return render_template('plan.html', User=current_user)
+
 @views.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
