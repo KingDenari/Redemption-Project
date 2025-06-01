@@ -16,7 +16,7 @@
       const btn = document.getElementById("confirmBtn");
       const plan = btn.getAttribute("data-plan");
       const price = btn.getAttribute("data-price");
-      const message = `Hello, I want to subscribe to the ${plan} plan (${price} KES) for revision materials and lessons.`;
+      const message = `Hello, I would like to subscribe to the ${plan} plan ${price} KES from myredemption.onrender.com/plan to access: \n• Revision Materials \n• Lessons \n• Grade 9 KJSEA Materials \n• Exam papers \n• Goal Tracker \n\nThankyou!`;
 
       if (method === 'whatsapp') {
         const phone = '254106848300'; // replace with your WhatsApp number
@@ -132,6 +132,35 @@
     </div>
   </div>
 </head>
+
+
+{% if request.endpoint not in ['auth.login', 'auth.sign_up'] %}
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+
+(function () {
+  var s1 = document.createElement("script"),
+      s0 = document.getElementsByTagName("script")[0];
+  s1.async = true;
+  s1.src = 'https://embed.tawk.to/683ca704994ebc190f53579c/1ismeoqqk';
+  s1.charset = 'UTF-8';
+  s1.setAttribute('crossorigin', '*');
+  s0.parentNode.insertBefore(s1, s0);
+})();
+
+// Move widget to bottom left once it loads
+Tawk_API = Tawk_API || {};
+Tawk_API.onLoad = function () {
+  Tawk_API.setAttributes({ position: 'left' }, function (error) {
+    if (error) {
+      console.error("Tawk.to position change failed:", error);
+    }
+  });
+};
+</script>
+<!--End of Tawk.to Script-->
+{% endif %}
 </body>
 
 
