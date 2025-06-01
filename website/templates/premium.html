@@ -24,6 +24,7 @@
     <button type="submit" class="btn btn-primary w-100">Submit</button>
   </form>
 
+
   <!-- What Premium Offers Section -->
   <div class="mt-5 mx-auto" style="max-width: 500px;">
     <h4 class="fw-bold text-center mb-3">What Premium Offers</h4>
@@ -35,9 +36,48 @@
       <li class="list-group-item">✅ G9 KJSEA Blueprints</li>
       <li class="list-group-item">✅ Exclusive PDF practice packs</li>
       <li class="list-group-item">✅ Priority access to new content</li>
+      <li class="list-group-item">✅ G9 Key Areas</li>
+      <li class="list-group-item">✅ Compostition & Insha guides</li>
+      <li class="list-group-item">✅ Programming Courses, guides and test</li>
+
     </ul>
   </div>
   <p>‎ </p>
+<!-- Floating Premium Plan Box -->
+<a href="/plan" class="premium-float shadow">
+  <div class="text-white text-center fw-bold">💎 View Premium Plan</div>
+</a>
+
+<!-- Floating Button Styles -->
+<style>
+  .premium-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #007bff, #6610f2);
+    padding: 12px 18px;
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+    z-index: 9999;
+    animation: pulse 2.5s infinite;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+  }
+
+  .premium-float:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #0056b3, #520dc2);
+    text-decoration: none;
+  }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(102, 16, 242, 0.4); }
+    70% { box-shadow: 0 0 0 12px rgba(102, 16, 242, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(102, 16, 242, 0); }
+  }
+</style>
+
 </div>
 
 <!-- Toggle Visibility Script -->
