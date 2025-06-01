@@ -26,7 +26,7 @@
 
   <!-- Completed Goals Section (Initially Hidden) -->
   <div id="completedGoalsSection" class="mt-5" style="display: none;">
-    <h3 class="text my-3">Completed Goals 🎉</h3>
+    <h4 class="text my-3">Completed Goals 🎉</h4>
     <p class="text">You did it! Every small step leads to something great!</p>
     <button id="toggleCompletedBtn" class="btn btn-info">📜 Show Completed Goals</button>
     <ul id="completedGoalsList" class="list-group mt-3"></ul>
@@ -34,8 +34,8 @@
 
   <!-- Reward Notification Box (Initially Hidden) -->
   <div id="rewardNotification" class="alert alert-success text-center mt-4" style="display: none;">
-    🎉 **You’ve Completed 20 Goals!** 🏅  
-    📷 Send a screenshot to claim **1 week of free premium!** 🚀  
+    🎉 You’ve Completed 5 Goals! 🏅  
+     📷 Send a screenshot to claim 1 week of free premium!* to redemptioncutomercare1@gmail.com  
     <button id="closeNotification" class="btn btn-danger btn-sm mt-2">❌ Dismiss</button>
   </div>
 <footer class="text-center mt-5 py-3 bg-light"><p>This version of goals is still being improved.Give suggestions<a href="/feedback"> here</a></p>
@@ -97,7 +97,7 @@
       parent.querySelector("button.btn-success").remove();
       completedCount++;
 
-      if (completedCount === 20) {
+      if (completedCount === 5) {
         document.getElementById("rewardNotification").style.display = "block";
       }
     }, 500);
