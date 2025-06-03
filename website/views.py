@@ -37,7 +37,7 @@ def settings():
 @views.route('/egoals', methods=['GET', 'POST'])
 @login_required
 def egoals():
-    premium_emails= ["abeldena123@gmail.com", "austinmvera@gmail.com"]
+    premium_emails= ["abeldena123@gmail.com", "austinmvera@gmail.com", "taherhussein572@gmail.com"]
 
     if request.method == 'POST':
         entered_email2 = request.form.get("email")
@@ -79,7 +79,7 @@ def unlocked_goals():
 @login_required
 def premium():
     allowed_code = ["qwerty", "1234", "1379K", "2468"]  # just a string, not a list
-    allowed_emails = ["abeldena123@gmail.com", "austinmvera@gmail.com", "alpcustomercare1@gmail.com", "kingsukuna922@gmail.com", "simplyaep5@gmail.com"]
+    allowed_emails = ["abeldena123@gmail.com", "austinmvera@gmail.com", "alpcustomercare1@gmail.com", "taherhussein572@gmail.com", "simplyaep5@gmail.com"]
 
     if request.method == "POST":
         entered_code = request.form.get("code")
