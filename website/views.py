@@ -113,7 +113,6 @@ def premium():
 
 
 @views.route('/unlocked_premium')
-@login_required
 def unlocked_premium():
     return render_template("unlocked_premium.html", user=current_user)
 
@@ -128,7 +127,6 @@ mail = Mail()
 
 
 @views.route('/feedback', methods=['GET', 'POST'])
-@login_required
 def feedback():
     if request.method == 'POST':
         grade = request.form['grade']
