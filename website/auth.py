@@ -62,15 +62,6 @@ def sign_up():
             db.session.commit()
             login_user(new_user, remember=True)
 
-            # ✅ Send welcome email after successful signup
-            with current_app.app_context():
-                msg = Message(
-                    subject='Welcome to Redemption Site',
-                    sender=current_app.config['MAIL_USERNAME'],
-                    recipients=[email],  # using the user's email directly
-                    body=f"Hello {first_name},\n\nThank you for signing up. Start your academic redemption journey with courage and consistency!"
-                )
-                mail.send(msg)  # This sends the email
 
             flash('Account created!', category='success')
             return redirect(url_for('auth.login'))
