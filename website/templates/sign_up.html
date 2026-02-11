@@ -5,36 +5,100 @@
 {% block content %}
 <div class="container">
   <h2 class="text-center my-4">Create Your Account</h2>
-  <h5 class="text-center my-4">To access the home webpage, you have to create an account.</h5>
+  <h5 class="text-center my-4 mb-5">Start your academic redemption journey today</h5>
 
-  <form method="POST" class="card p-4 shadow">
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show mt-3" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" class="card p-4 shadow" style="max-width: 500px; margin: 0 auto;">
     <div class="form-group mb-3">
-      <label for="email" class="fw-bold">Email Address</label>
-      <input type="email" class="form-control" id="email" name="email" required placeholder="Enter your email">
+      <label for="email" class="font-weight-bold">Email Address</label>
+      <input type="email" class="form-control" id="email" name="email" required 
+             placeholder="Enter your email" value="{{ request.form.email if request.form }}">
+      <small class="form-text text-muted">We'll never share your email with anyone else.</small>
     </div>
 
     <div class="form-group mb-3">
-      <label for="firstName" class="fw-bold">First Name</label>
-      <input type="text" class="form-control" id="firstName" name="firstName" required placeholder="Enter your first name">
+      <label for="firstName" class="font-weight-bold">First Name</label>
+      <input type="text" class="form-control" id="firstName" name="firstName" required 
+             placeholder="Enter your first name" value="{{ request.form.firstName if request.form }}">
     </div>
 
     <div class="form-group mb-3">
-      <label for="password1" class="fw-bold">Password</label>
-      <input type="password" class="form-control" id="password1" name="password1" required placeholder="Create a password 8+ characters">
+      <label for="password1" class="font-weight-bold">Password</label>
+      <input type="password" class="form-control" id="password1" name="password1" required 
+             placeholder="Create a password (8+ characters)">
+      <small class="form-text text-muted">
+        <i class="fa fa-info-circle"></i> Must be at least 8 characters with letters and numbers
+      </small>
     </div>
 
     <div class="form-group mb-3">
-      <label for="password2" class="fw-bold">Confirm Password</label>
-      <input type="password" class="form-control" id="password2" name="password2" required placeholder="Confirm your password">
+      <label for="password2" class="font-weight-bold">Confirm Password</label>
+      <input type="password" class="form-control" id="password2" name="password2" required 
+             placeholder="Confirm your password">
     </div>
 
-    <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+    <div class="form-check mb-4">
+      <input type="checkbox" class="form-check-input" id="termsCheck" required>
+      <label class="form-check-label" for="termsCheck">
+        I agree to the <a href="/terms" class="text-decoration-none">Terms of Use</a> 
+      </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+    
+    <hr class="my-4">
+    
+    <p class="text-center text-muted small">
+      <i class="fa fa-shield-alt"></i> Your data is securely encrypted
+    </p>
   </form>
 
   <p class="text-center mt-3">
-    Already have an account? <a href="/login" class="text-decoration-none fw-bold">Login here</a>.
+    Already have an account? <a href="{{ url_for('auth.login') }}" class="text-decoration-none font-weight-bold">Login here</a>.
   </p>
 </div>
+
+<script>
+// Auto-dismiss alerts after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        $('.alert').alert('close');
+    }, 5000);
+});
+
+// Password strength indicator
+document.getElementById('password1').addEventListener('input', function(e) {
+    const password = e.target.value;
+    const strengthText = document.querySelector('.strength-text');
+    
+    if (!strengthText) return;
+    
+    let strength = 'Weak';
+    let color = 'text-danger';
+    
+    if (password.length >= 12) {
+        strength = 'Strong';
+        color = 'text-success';
+    } else if (password.length >= 8) {
+        strength = 'Good';
+        color = 'text-warning';
+    }
+    
+    strengthText.textContent = `Strength: ${strength}`;
+    strengthText.className = `form-text ${color} strength-text`;
+});
+</script>
 {% endblock %}
-
-
