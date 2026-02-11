@@ -1,48 +1,76 @@
 {% extends "base.html" %}
-
-{% block title %}Premium{% endblock %}
+{% block title %}Premium Login{% endblock %}
 
 {% block content %}
 <div class="container">
-  <h2 class="text-center my-4">Premium Access</h2>
-  <p class="text-center mb-4">Get more downloaded papers</p>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h2 class="text-center my-4">Premium Access</h2>
+      <p class="text-center text-muted mb-4">Enter your premium credentials to unlock exclusive content</p>
 
-  <form method="POST" class="card p-4 shadow mx-auto" style="max-width: 500px;">
-    <div class="form-group mb-3">
-      <label for="code" class="fw-bold">Secret Code</label>
-      <div class="input-group">
-        <input type="password" class="form-control" id="code" name="code" placeholder="Enter the secret code to access the site" required>
-       
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' or category == 'danger' else 'success' }} alert-dismissible fade show mt-3" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" class="card p-4 shadow" style="max-width: 500px; margin: 0 auto;">
+        <div class="form-group mb-3">
+          <label for="email" class="font-weight-bold">Premium Email</label>
+          <input type="email" class="form-control" id="email" name="email" required 
+                 placeholder="Enter your premium email" value="{{ request.form.email if request.form }}">
+          <small class="form-text text-muted">Must be a registered premium email address</small>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="code" class="font-weight-bold">Access Code</label>
+          <div class="input-group">
+            <input type="password" class="form-control" id="code" name="code" required 
+                   placeholder="Enter your access code">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="button" id="toggleCode">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <small class="form-text text-muted">Case-sensitive access code</small>
+        </div>
+
+        <div class="form-check mb-4">
+          <input type="checkbox" class="form-check-input" id="termsCheck" required>
+          <label class="form-check-label" for="termsCheck">
+            I confirm I have permission to access premium content
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Unlock Premium</button>
+        
+        <div class="text-center mt-3">
+          <small class="text-muted">
+            <i class="fas fa-lock"></i> Your credentials are securely encrypted
+          </small>
+        </div>
+      </form>
+
+      <div class="text-center mt-4">
+        <p class="mb-2">
+          <a href="https://myredemption.tawk.help/" target="_blank" class="text-decoration-none">
+            <i class="fas fa-question-circle"></i> Need help with access?
+          </a>
+        </p>
       </div>
     </div>
-
-    <div class="form-group mb-3">
-      <label for="email" class="fw-bold">Email Address</label>
-      <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
-    </div>
-
-    <button type="submit" class="btn btn-primary w-100">Submit</button>
-  </form>
-
-
-  <!-- What Premium Offers Section -->
-  <div class="mt-5 mx-auto" style="max-width: 500px;">
-    <h4 class="fw-bold text-center mb-3">What Premium Offers</h4>
-    <ul class="list-group">
-      <li class="list-group-item">✅ Downloadable papers</li>
-      <li class="list-group-item">✅ More exams</li>
-      <li class="list-group-item">✅ More notes</li>
-      <li class="list-group-item">✅ New revision materials</li>
-      <li class="list-group-item">✅ G9 KJSEA Blueprints</li>
-      <li class="list-group-item">✅ Exclusive PDF practice packs</li>
-      <li class="list-group-item">✅ Priority access to new content</li>
-      <li class="list-group-item">✅ G9 Key Areas</li>
-      <li class="list-group-item">✅ Compostition & Insha guides</li>
-      <li class="list-group-item">✅ Programming Courses, guides and test</li>
-
-    </ul>
   </div>
-  <p>‎ </p>
+</div>
+
 <!-- Floating Premium Plan Box -->
 <a href="/plan" class="premium-float shadow">
   <div class="text-white text-center fw-bold">💎 View Premium Plan</div>
@@ -78,22 +106,27 @@
   }
 </style>
 
-</div>
-
-<!-- Toggle Visibility Script -->
 <script>
-  function toggleCodeVisibility() {
-    const codeInput = document.getElementById("code");
-    const icon = document.getElementById("toggle-icon");
-    if (codeInput.type === "password") {
-      codeInput.type = "text";
-      icon.classList.remove("fa-eye");
-      icon.classList.add("fa-eye-slash");
-    } else {
-      codeInput.type = "password";
-      icon.classList.remove("fa-eye-slash");
-      icon.classList.add("fa-eye");
-    }
-  }
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        $('.alert').alert('close');
+    }, 5000);
+    
+    // Toggle password visibility
+    $('#toggleCode').click(function() {
+        const passwordField = $('#code');
+        const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+        passwordField.attr('type', type);
+        $(this).find('i').toggleClass('fa-eye fa-eye-slash');
+    });
+    
+    // Form validation feedback
+    $('form').on('submit', function() {
+        const submitBtn = $(this).find('button[type="submit"]');
+        submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Verifying...');
+        submitBtn.prop('disabled', true);
+    });
+});
 </script>
 {% endblock %}
