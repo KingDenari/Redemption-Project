@@ -43,8 +43,69 @@
 </div>
 
 <script>
-  const tasks = [];
-  let completedCount = 0; // Tracks completed goals
+  let tasks = [];
+  let completedCount = 0;
+
+  // Load tasks from localStorage on startup
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedTasks = localStorage.getItem('user_goals');
+    if (savedTasks) {
+      tasks = JSON.parse(savedTasks);
+      renderTasks();
+    }
+  });
+
+  function saveTasksToLocalStorage() {
+    localStorage.setItem('user_goals', JSON.stringify(tasks));
+  }
+
+  function renderTasks() {
+    const goalsList = document.getElementById("goalsList");
+    const completedGoalsList = document.getElementById("completedGoalsList");
+    goalsList.innerHTML = "";
+    completedGoalsList.innerHTML = "";
+    completedCount = 0;
+
+    tasks.forEach((task, index) => {
+      const li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between align-items-center";
+      
+      const taskContent = document.createElement("span");
+      if (task.completed) {
+        taskContent.style.textDecoration = "line-through";
+        completedCount++;
+      }
+      taskContent.innerHTML = `<strong>${task.title}</strong><br><small>${task.date} at ${task.time}</small>`;
+      li.appendChild(taskContent);
+
+      const btnGroup = document.createElement("div");
+      let buttonsHtml = "";
+      
+      if (!task.completed) {
+        buttonsHtml += `<button class="btn btn-success btn-sm mr-2" onclick="markDone(${index})">✅ Done</button>`;
+      }
+      
+      buttonsHtml += `
+        <button class="btn btn-warning btn-sm mr-2" onclick="editTask(${index})">✍️ Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteTask(${index})">🗑️ Delete</button>
+      `;
+      btnGroup.innerHTML = buttonsHtml;
+      li.appendChild(btnGroup);
+
+      if (task.completed) {
+        completedGoalsList.appendChild(li);
+        document.getElementById("completedGoalsSection").style.display = "block";
+      } else {
+        goalsList.appendChild(li);
+      }
+    });
+
+    if (completedCount >= 5) {
+      document.getElementById("rewardNotification").style.display = "block";
+    } else {
+      document.getElementById("rewardNotification").style.display = "none";
+    }
+  }
 
   document.getElementById("addTaskBtn").addEventListener("click", function () {
     document.getElementById("taskForm").style.display = "block";
@@ -62,64 +123,49 @@
     const date = document.getElementById("goalDate").value;
     const time = document.getElementById("goalTime").value;
 
-    // Convert date format to DD-MM-YYYY
     const [year, month, day] = date.split("-");
     const formattedDate = `${day}-${month}-${year}`;
 
-    const li = document.createElement("li");
-    li.className = "list-group-item d-flex justify-content-between align-items-center";
-    const taskContent = document.createElement("span");
-    taskContent.innerHTML = `<strong>${title}</strong><br><small>${formattedDate} at ${time}</small>`;
-    li.appendChild(taskContent);
+    const newTask = {
+      title: title,
+      date: formattedDate,
+      time: time,
+      completed: false
+    };
 
-    const btnGroup = document.createElement("div");
-    btnGroup.innerHTML = `
-      <button class="btn btn-success btn-sm mr-2" onclick="markDone(this)">✅ Done</button>
-      <button class="btn btn-warning btn-sm mr-2" onclick="editTask(this)">✍️ Edit</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteTask(this)">🗑️ Delete</button>
-    `;
-    li.appendChild(btnGroup);
-
-    document.getElementById("goalsList").appendChild(li);
-    tasks.push({ element: li });
+    tasks.push(newTask);
+    saveTasksToLocalStorage();
+    renderTasks();
 
     document.getElementById("goalForm").reset();
     document.getElementById("taskForm").style.display = "none";
   });
 
-  function markDone(button) {
-    const parent = button.closest("li");
-    parent.querySelector("span").style.textDecoration = "line-through";
-
-    setTimeout(() => {
-      document.getElementById("completedGoalsSection").style.display = "block";
-      document.getElementById("completedGoalsList").appendChild(parent);
-      parent.querySelector("button.btn-success").remove();
-      completedCount++;
-
-      if (completedCount === 5) {
-        document.getElementById("rewardNotification").style.display = "block";
-      }
-    }, 500);
+  function markDone(index) {
+    tasks[index].completed = true;
+    saveTasksToLocalStorage();
+    renderTasks();
   }
 
-  function deleteTask(button) {
+  function deleteTask(index) {
     if (confirm("Deleting your goal? Redemption means completing—not escaping!")) {
-      button.closest("li").remove();
+      tasks.splice(index, 1);
+      saveTasksToLocalStorage();
+      renderTasks();
     }
   }
 
-  function editTask(button) {
+  function editTask(index) {
     if (confirm("Trying to edit? Redemption doesn’t rewrite fate—only improves it!")) {
-      const parent = button.closest("li");
-      const title = parent.querySelector("span strong").innerText;
-      const dateTime = parent.querySelector("span small").innerText;
-
-      document.getElementById("goalTitle").value = title;
-      const [dayMonthYear, time] = dateTime.split(" at ");
-      const [day, month, year] = dayMonthYear.split("-");
+      const task = tasks[index];
+      document.getElementById("goalTitle").value = task.title;
+      const [day, month, year] = task.date.split("-");
       document.getElementById("goalDate").value = `${year}-${month}-${day}`;
-      document.getElementById("goalTime").value = time;
+      document.getElementById("goalTime").value = task.time;
+      
+      // Remove the old task so the user can "save" the new one
+      tasks.splice(index, 1);
+      document.getElementById("taskForm").style.display = "block";
     }
   }
 
