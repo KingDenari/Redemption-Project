@@ -1,37 +1,74 @@
 {% extends "base.html" %}
-{% block title %}Goals{% endblock %}
+{% block title %}Goals Access{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <h2 class="text-center my-4">Verify Premium Email to Access the Page</h2>
-  <p class= "text-center mb-4">Please enter your email to access the My Goals section (Premium Users Only).</p>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h2 class="text-center my-4">Goals Access</h2>
+      <p class="text-center text-muted mb-4">Verify your premium email to access goal tracking</p>
 
-  <form method="POST" class ="card p-4 shadow mx-auto" style="max-width: 500px;">
-    <div class="form-group mb-3">
-      
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' or category == 'danger' else 'success' }} alert-dismissible fade show mt-3" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" class="card p-4 shadow" style="max-width: 500px; margin: 0 auto;">
+        <div class="form-group mb-4">
+          <label for="email" class="font-weight-bold">Premium Email</label>
+          <input type="email" class="form-control" id="email" name="email" required 
+                 placeholder="Enter your premium email" value="{{ request.form.email if request.form }}">
+          <small class="form-text text-muted">Enter the email associated with your premium account</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Access Goals</button>
         
-    <div class="form-group mb-3">
-      <label for="email" class="fw-bold">Email Address</label>
-      <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+        <div class="text-center mt-3">
+          <small class="text-muted">
+            <i class="fas fa-shield-alt"></i> Premium users only
+          </small>
+        </div>
+      </form>
+
+      <div class="text-center mt-4">
+        <p class="mb-2">
+          <a href="{{ url_for('views.premium') }}" class="text-decoration-none font-weight-bold">
+            <i class="fas fa-crown"></i> Get Premium Access
+          </a>
+        </p>
+        <p class="text-muted small">
+          Goal tracking is available for premium users only
+        </p>
+      </div>
     </div>
-
-    <button type="submit" class="btn btn-primary w-100">Submit</button>
-  </form>
-
-  <div class="mt-5 mx-auto" style="max-width: 500px;">
-    <h4 class="fw-bold text-center mb-3">What Goals Offers</h4>
-    <ul class="list-group">
-      <li class="list-group-item">✅ Goal Tracking</li>
-      <li class="list-group-item">✅ Project Insights</li>
-      <li class="list-group-item">✅ Email Notifications</li>
-      <li class="list-group-item">✅ Set & Track Goals</li>
-      <li class="list-group-item">✅ Custom Deadlines</li>
-    </ul>
   </div>
-  <p>‎ </p>
 </div>
 
-
-
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        $('.alert').alert('close');
+    }, 5000);
+    
+    // Form validation feedback
+    $('form').on('submit', function() {
+        const submitBtn = $(this).find('button[type="submit"]');
+        submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Verifying...');
+        submitBtn.prop('disabled', true);
+    });
+    
+    // Focus on email field
+    $('#email').focus();
+});
+</script>
 {% endblock %}
