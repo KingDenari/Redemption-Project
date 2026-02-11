@@ -7,8 +7,12 @@ import qrcode
 import smtplib
 from email.message import EmailMessage
 from datetime import datetime
+from datetime import datetime, timedelta  # Add timedelta here
 
 views = Blueprint('views', __name__)
+
+
+
 
 @views.route('/')
 @login_required
@@ -37,21 +41,196 @@ def settings():
 @views.route('/egoals', methods=['GET', 'POST'])
 @login_required
 def egoals():
-    premium_emails= ["abeldena123@gmail.com", "austinmvera@gmail.com", "taherhussein572@gmail.com", "malonepost725@gmail.com"]
+    # Premium email list - consider moving this to database or config file
+    premium_emails = [
+        "abeldena123@gmail.com",
+        "austinmvera@gmail.com",
+        "taherhussein572@gmail.com",
+        "malonepost725@gmail.com",
+        "clivenezekiel@gmail.com"
+    ]
+
+    # Add session-based attempt tracking for security
+    if 'egoals_attempts' not in session:
+        session['egoals_attempts'] = 0
+    
+    # Check if user is locked out
+    if session.get('egoals_locked_until'):
+        lock_time = session['egoals_locked_until']
+        if datetime.now() < lock_time:
+            remaining = (lock_time - datetime.now()).seconds // 60
+            flash(f"Too many failed attempts. Please try again in {remaining} minutes.", "danger")
+            return render_template("egoals.html", user=current_user)
+        else:
+            # Reset if lock time has passed
+            session.pop('egoals_locked_until', None)
+            session['egoals_attempts'] = 0
 
     if request.method == 'POST':
-        entered_email2 = request.form.get("email")
-
-        if entered_email2 in premium_emails:
-            flash("Access granted! You now have access.", category="success")
+        # Sanitize and validate input
+        entered_email = request.form.get("email", "").strip().lower()
+        
+        # Basic validation
+        if not entered_email:
+            flash("Please enter an email address.", "danger")
+            return render_template("egoals.html", user=current_user)
+        
+        # Simple email format validation
+        if '@' not in entered_email or '.' not in entered_email:
+            flash("Please enter a valid email address.", "danger")
+            return render_template("egoals.html", user=current_user)
+        
+        # Check against premium list
+        if entered_email in premium_emails:
+            # Reset attempts on successful login
+            session['egoals_attempts'] = 0
+            session.pop('egoals_locked_until', None)
             
+            # Get current user info for personalization
+            user_name = current_user.first_name if current_user.first_name else "User"
+            
+            flash("Access granted! You now have access to premium goal tracking.", "success")
+            
+            # Send notification email with improved error handling
+            try:
+                msg = EmailMessage()
+                msg['Subject'] = '🎯 Goals Access Granted - Start Achieving!'
+                msg['From'] = 'Academic Redemption <abeldena123@gmail.com>'
+                msg['To'] = entered_email
+                now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                
+                # Create HTML email with better formatting
+                html_content = f"""
+                <html>
+                <head>
+                    <style>
+                        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                        .header {{ background-color: #4CAF50; color: white; padding: 20px; text-align: center; border-radius: 5px; }}
+                        .content {{ background-color: #f9f9f9; padding: 20px; border-radius: 5px; margin-top: 10px; }}
+                        .features {{ margin: 20px 0; }}
+                        .feature-item {{ background: white; padding: 10px; margin: 5px 0; border-left: 4px solid #4CAF50; }}
+                        .footer {{ margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 0.9em; }}
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>🎯 Goals Access Activated!</h1>
+                        </div>
+                        <div class="content">
+                            <p>Hello {user_name},</p>
+                            <p>Great news! Your access to our premium goal-setting features has been activated.</p>
+                            
+                            <p><strong>Access Details:</strong></p>
+                            <ul>
+                                <li>Email: {entered_email}</li>
+                                <li>Access Time: {now}</li>
+                                <li>Status: <span style="color: #4CAF50;">ACTIVE</span></li>
+                            </ul>
+                            
+                            <div class="features">
+                                <p><strong>What you can now do:</strong></p>
+                                <div class="feature-item">✅ Set and track academic goals</div>
+                                <div class="feature-item">✅ Create custom deadlines</div>
+                                <div class="feature-item">✅ Receive progress notifications</div>
+                                <div class="feature-item">✅ Access goal analytics</div>
+                            </div>
+                            
+                            <p>Start turning your academic dreams into reality today!</p>
+                            
+                            <p>
+                                <a href="{url_for('views.unlocked_goals', _external=True)}" 
+                                   style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                                   🚀 Start Setting Goals
+                                </a>
+                            </p>
+                        </div>
+                        <div class="footer">
+                            <p>Best regards,<br>
+                            <strong>The Academic Redemption Team</strong></p>
+                            <p><small>This is an automated message. Please do not reply to this email.</small></p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+                
+                # Plain text version for email clients that don't support HTML
+                text_content = f"""Hello {user_name},
 
+🎉 Great news! Your access to our premium goal-setting features has been activated.
+
+Access Details:
+• Email: {entered_email}
+• Access Time: {now}
+• Status: ACTIVE
+
+What you can now do:
+✅ Set and track academic goals
+✅ Create custom deadlines
+✅ Receive progress notifications
+✅ Access goal analytics
+
+Start making your goals a reality with our premium features!
+
+Start here: {url_for('views.unlocked_goals', _external=True)}
+
+Cheers to new achievements,
+The Academic Redemption Team ✨
+
+---
+This is an automated message. Please do not reply to this email.
+"""
+
+                # Set both HTML and plain text content
+                msg.set_content(text_content)
+                msg.add_alternative(html_content, subtype='html')
+                
+                # Send email with timeout
+                with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=10) as smtp:
+                    smtp.login('abeldena123@gmail.com', 'wphv ckth viop jmtx ')
+                    smtp.send_message(msg)
+                    
+                # Log successful email send
+                print(f"Goals access email sent to: {entered_email} at {now}")
+                
+            except smtplib.SMTPAuthenticationError:
+                flash("Access granted! Welcome email could not be sent due to server configuration.", "warning")
+                print("SMTP Authentication Error - Check email credentials")
+            except smtplib.SMTPException as e:
+                flash("Access granted! Welcome email could not be sent.", "warning")
+                print(f"SMTP Error: {e}")
+            except Exception as e:
+                flash("Access granted! There was an issue sending the welcome email.", "warning")
+                print(f"Email sending error: {e}")
+            
+            # Log the access (consider adding to database)
+            print(f"Goals access granted to: {entered_email} at {datetime.now()}")
+            
             return redirect(url_for('views.unlocked_goals'))
         
         else:
-            flash("Access denied. Invalid email.", category="danger")
-
-
+            # Increment failed attempts
+            session['egoals_attempts'] = session.get('egoals_attempts', 0) + 1
+            attempts_made = session['egoals_attempts']
+            
+            # Implement temporary lockout after 3 failed attempts
+            if attempts_made >= 3:
+                # Lock for 15 minutes
+                lock_until = datetime.now() + timedelta(minutes=15)
+                session['egoals_locked_until'] = lock_until
+                flash("Too many failed attempts. Access locked for 15 minutes.", "danger")
+            else:
+                attempts_left = 3 - attempts_made
+                flash(f"Access denied. Invalid email. {attempts_left} attempts remaining.", "danger")
+            
+            # Log failed attempt (consider adding to database)
+            print(f"Failed egoals access attempt: {entered_email} at {datetime.now()}")
+            
+            return render_template("egoals.html", user=current_user)
+    
+    # For GET request, show the form
     return render_template("egoals.html", user=current_user)
 
 
@@ -63,37 +242,125 @@ def unlocked_goals():
 @views.route('/premium', methods=['GET', 'POST'])
 @login_required
 def premium():
-    allowed_code = ["qwerty", "1234", "1379K", "2468", "2025"]  # just a string, not a list
-    allowed_emails = ["abeldena123@gmail.com", "austinmvera@gmail.com", "alpcustomercare1@gmail.com", "taherhussein572@gmail.com", "simplyaep5@gmail.com", "malonepost725@gmail.com"]
+    allowed_codes = ["qwerty", "1234", "1379K", "2468", "2025"]
+    allowed_emails = ["abeldena123@gmail.com", "austinmvera@gmail.com", 
+                     "alpcustomercare1@gmail.com", "clivenezekiel@gmail.com", 
+                     "taherhussein572@gmail.com", "simplyaep5@gmail.com", 
+                     "malonepost725@gmail.com"]
 
     if request.method == "POST":
-        entered_code = request.form.get("code")
-        entered_email = request.form.get("email")
-
-        if entered_code in allowed_code and entered_email in allowed_emails:
-            flash("Access granted! You now have premium access.", category="success")
+        entered_code = request.form.get("code", "").strip()
+        entered_email = request.form.get("email", "").strip().lower()
+        
+        # Enhanced validation
+        if not entered_email or not entered_code:
+            flash("Both email and access code are required.", "danger")
+            return render_template("premium.html", user=current_user)
+        
+        # Rate limiting simulation (you should implement proper rate limiting)
+        session.setdefault('premium_attempts', 0)
+        session['premium_attempts'] += 1
+        
+        if session.get('premium_attempts', 0) > 5:
+            flash("Too many attempts. Please try again later.", "danger")
+            return render_template("premium.html", user=current_user)
+        
+        # Validate credentials
+        if entered_email in allowed_emails and entered_code in allowed_codes:
+            # Reset attempts on success
+            session['premium_attempts'] = 0
+            
+            # Log successful access
+            print(f"Premium access granted to: {entered_email}")
+            
+            flash("Access granted! You now have premium access.", "success")
 
             # Send notification email
             try:
                 msg = EmailMessage()
-                msg['Subject'] = 'New Premium Sign In'
+                msg['Subject'] = '🎉 Premium Access Activated'
                 msg['From'] = 'redemptioncustomercare@gmail.com'
                 msg['To'] = entered_email
-                now = datetime.now().strftime('%Y-%m-%d %H:%M')
-                msg.set_content(
-                    f"Hello Premium User!,\n\nYou are now eligible for free downloadable Exams, Notes, and Blueprints.\n\nNew Premium sign in on {now}"
-                )
+                now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                
+                msg.set_content(f"""Hello Premium User!
+
+Congratulations! Your premium access has been successfully activated.
+
+📊 Access Details:
+• Activated on: {now}
+• Features unlocked: All premium content
+• Account: {entered_email}
+
+You now have access to:
+✅ Free downloadable Exams & Notes
+✅ Study Blueprints
+✅ Advanced Analytics
+✅ Priority Support
+
+Start exploring your premium features now!
+
+Best regards,
+The Academic Redemption Team
+""")
+                
+                msg.add_alternative(f"""\
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }}
+        .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }}
+        .feature {{ background: white; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #667eea; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Premium Access Activated!</h1>
+        </div>
+        <div class="content">
+            <p>Hello Premium User!</p>
+            <p>Your premium access has been successfully activated on <strong>{now}</strong>.</p>
+            
+            <h3>🎯 What's Now Available:</h3>
+            <div class="feature">✅ Free downloadable Exams & Notes</div>
+            <div class="feature">✅ Study Blueprints & Strategies</div>
+            <div class="feature">✅ Advanced Progress Analytics</div>
+            <div class="feature">✅ Priority 24/7 Support</div>
+            
+            <p>Start exploring your premium features and take your academic journey to the next level!</p>
+            
+            <p>Best regards,<br>
+            <strong>The Academic Redemption Team</strong></p>
+        </div>
+    </div>
+</body>
+</html>
+""", subtype='html')
 
                 with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-                    smtp.login('redemptioncustomercare1@gmail.com', 'gufo zvxi fnvn dnyq')
+                    smtp.login('abeldena123@gmail.com', 'wphv ckth viop jmtx ')
                     smtp.send_message(msg)
+                    
+                flash("Welcome email sent to your inbox!", "success")
+                
             except Exception as e:
-                flash(f"Notification email failed: {e}", category="danger")
+                print(f"Email sending failed: {e}")
+                flash("Premium access granted, but welcome email failed to send.", "warning")
 
             return redirect(url_for('views.unlocked_premium'))
         else:
-            flash("Access denied. Invalid code or email.", category="danger")
-
+            attempts_left = 5 - session.get('premium_attempts', 0)
+            if attempts_left > 0:
+                flash(f"Invalid credentials. {attempts_left} attempts remaining.", "danger")
+            else:
+                flash("Too many failed attempts. Access temporarily locked.", "danger")
+            
+            return render_template("premium.html", user=current_user)
+    
     return render_template("premium.html", user=current_user)
 
 
@@ -127,8 +394,8 @@ def feedback():
 
         msg = Message(
             subject="📥 New Feedback Received",
-            sender='redemptioncustomercare1@gmail.com',
-            recipients=['redemptioncustomercare1@gmail.com'],
+            sender='abeldena123@gmail.com',
+            recipients=['abeldena123@gmail.com'],
             body=email_body
         )
 
@@ -194,7 +461,7 @@ def generate_qr():
                 try:
                     msg = EmailMessage()
                     msg['Subject'] = 'Your Requested QR Code'
-                    msg['From'] = 'redemptioncustomercare1@gmail.com'
+                    msg['From'] = 'abeldena123@gmail.com'
                     msg['To'] = user_email
                     msg.set_content(f"Here is your QR code for {selected_file}.")
 
@@ -203,7 +470,7 @@ def generate_qr():
                         msg.add_attachment(file_data, maintype='image', subtype='png', filename=filename)
 
                     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-                        smtp.login('redemptioncustomercare1@gmail.com', 'gufo zvxi fnvn dnyq')
+                        smtp.login('abeldena123@gmail.com', 'wphv ckth viop jmtx ')
                         smtp.send_message(msg)
 
                     flash("QR code sent to your email!", category='success')
