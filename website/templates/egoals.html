@@ -10,28 +10,30 @@
 
       <!-- Flash Messages -->
       {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-            <div class="alert alert-{{ 'danger' if category == 'error' or category == 'danger' else 'success' }} alert-dismissible fade show mt-3" role="alert">
-              {{ message }}
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-          {% endfor %}
-        {% endif %}
+      {% if messages %}
+      {% for category, message in messages %}
+      <div
+        class="alert alert-{{ 'danger' if category == 'error' or category == 'danger' else 'success' }} alert-dismissible fade show mt-3"
+        role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endfor %}
+      {% endif %}
       {% endwith %}
 
       <form method="POST" class="card p-4 shadow" style="max-width: 500px; margin: 0 auto;">
         <div class="form-group mb-4">
           <label for="email" class="font-weight-bold">Premium Email</label>
-          <input type="email" class="form-control" id="email" name="email" required 
-                 placeholder="Enter your premium email" value="{{ request.form.email if request.form }}">
+          <input type="email" class="form-control" id="email" name="email" required
+            placeholder="Enter your premium email" value="{{ request.form.email if request.form }}">
           <small class="form-text text-muted">Enter the email associated with your premium account</small>
         </div>
 
         <button type="submit" class="btn btn-primary btn-block">Access Goals</button>
-        
+
         <div class="text-center mt-3">
           <small class="text-muted">
             <i class="fas fa-shield-alt"></i> Premium users only
@@ -54,21 +56,21 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     // Auto-dismiss alerts after 5 seconds
-    setTimeout(function() {
-        $('.alert').alert('close');
+    setTimeout(function () {
+      $('.alert').alert('close');
     }, 5000);
-    
+
     // Form validation feedback
-    $('form').on('submit', function() {
-        const submitBtn = $(this).find('button[type="submit"]');
-        submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Verifying...');
-        submitBtn.prop('disabled', true);
+    $('form').on('submit', function () {
+      const submitBtn = $(this).find('button[type="submit"]');
+      submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Verifying...');
+      submitBtn.prop('disabled', true);
     });
-    
+
     // Focus on email field
     $('#email').focus();
-});
+  });
 </script>
 {% endblock %}
